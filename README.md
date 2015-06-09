@@ -7,4 +7,6 @@ For more information, see the Wiki at
 
 https://github.com/cstratton/usb_gsm_sender/wiki
 
-Where's the code you ask?   Still needing some review before posting.   But I'm going to go ahead and create the repository right now in order to use the wiki for project notes and lessons learned.
+Some very, very alpha code has now been added, which uses an mbed-derived source base and a hand-modified Makefile which attempts to provide some flexibility across STM32F and KL25Z targets (K20's should have worked, but oddly don't).
+
+License: Good question!   Much of this depends on mbed-derived code much of which is apache licensed.  However, some pieces may be under other licenses.  As for the project overall, while I plan to make it usefull open, until I've completed a license review of all the pieces, the simple answer is that for the original parts or original aspects of derivative parts, as of the present NO LICENSE IS OFFERED, which is to say that copyright law is in full force, and no authorization to do anything which copyright law would prohibit is yet being offered.
