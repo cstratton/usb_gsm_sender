@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef USBHOSTKEYBOARD_H
-#define USBHOSTKEYBOARD_H
+#ifndef USBHOSTE303_H
+#define USBHOSTE303_H
 
 #include "USBHostConf.h"
 
-#if USBHOST_KEYBOARD
+#if 1//USBHOST_E303
 
 #include "USBHost.h"
 
 /** 
- * A class to communicate a USB keyboard
+ * A class to communicate a USB GSM dongle E303
  */
 class USBHostE303 : public IUSBEnumerator {
 public:
@@ -35,38 +35,38 @@ public:
     USBHostE303();
 
     /**
-     * Try to connect a keyboard device
+     * Try to connect a E303 device
      *
      * @return true if connection was successful
      */
     bool connect();
 
     /**
-    * Check if a keyboard is connected
+    * Check if a E303 is connected
     *
-    * @returns true if a keyboard is connected
+    * @returns true if a E303 is connected
     */
     bool connected();
 
     /**
-     * Attach a callback called when a keyboard event is received
+     * Attach a callback called when a E303 event is received
      *
      * @param ptr function pointer
      */
     inline void attach(void (*ptr)(uint8_t key)) {
         if (ptr != NULL) {
-            onKey = ptr;
+            onEvent = ptr;
         }
     }
 
     /**
-     * Attach a callback called when a keyboard event is received
+     * Attach a callback called when a E303 event is received
      *
      * @param ptr function pointer
      */
     inline void attach(void (*ptr)(uint8_t keyCode, uint8_t modifier)) {
         if (ptr != NULL) {
-            onKeyCode = ptr;
+            onEventCode = ptr;
         }
     }
 
@@ -87,7 +87,7 @@ private:
     USBEndpoint * bulk_in;
     USBEndpoint * bulk_out;
     uint8_t report[9];
-    int keyboard_intf;
+    int e303_intf;
     bool preswitch_device_found;
     bool postswitch_device_found;
 
@@ -95,8 +95,8 @@ private:
 
     void rxHandler();
 
-    void (*onKey)(uint8_t key);
-    void (*onKeyCode)(uint8_t key, uint8_t modifier);
+    void (*onEvent)(uint8_t event);
+    void (*onEventCode)(uint8_t event, uint8_t modifier);
 
     int report_id;
     
