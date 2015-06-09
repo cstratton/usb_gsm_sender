@@ -26,13 +26,13 @@
 /** 
  * A class to communicate a USB keyboard
  */
-class USBHostE303PreSwitch : public IUSBEnumerator {
+class USBHostE303 : public IUSBEnumerator {
 public:
     
     /**
     * Constructor
     */
-    USBHostE303PreSwitch();
+    USBHostE303();
 
     /**
      * Try to connect a keyboard device

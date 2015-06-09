@@ -1,12 +1,12 @@
 #include "USBHostE303.h" //covers both pre- and post-
 
-USBHostE303PreSwitch::USBHostE303PreSwitch() {
+USBHostE303::USBHostE303() {
     host = USBHost::getHostInst();
     init();
 }
 
 
-void USBHostE303PreSwitch::init() {
+void USBHostE303::init() {
   printf("::init!!!!!!!!!!!!!1\n");
     dev = NULL;
     report_id = 0;
@@ -19,12 +19,12 @@ void USBHostE303PreSwitch::init() {
     bulk_in = NULL;
 }
 
-bool USBHostE303PreSwitch::connected() {
+bool USBHostE303::connected() {
     return dev_connected;
 }
 
 
-int USBHostE303PreSwitch::doswitch() {
+int USBHostE303::doswitch() {
  unsigned char cmd[] = {
       0x55, 0x53, 0x42, 0x43, 0x12, 0x34, 0x56, 0x78, 
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 
@@ -35,18 +35,18 @@ int USBHostE303PreSwitch::doswitch() {
   return res;
 }
 
-int USBHostE303PreSwitch::bulk_write(void *data, int len) {
+int USBHostE303::bulk_write(void *data, int len) {
   printf("trying to write to interface %d\n", keyboard_intf);
   int rv = host->bulkWrite(dev, bulk_out, (uint8_t *)data, len);
   return (checkResult(rv, bulk_out)) ? -1 : 0;
 }
 
-int USBHostE303PreSwitch::bulk_read(void *data, int len) {
+int USBHostE303::bulk_read(void *data, int len) {
   int rv = host->bulkRead(dev, bulk_in, (uint8_t *)data, len);
   return (checkResult(rv, bulk_in)) ? -1 : 0;
 }
 
-int USBHostE303PreSwitch::checkResult(uint8_t res, USBEndpoint * ep) {
+int USBHostE303::checkResult(uint8_t res, USBEndpoint * ep) {
     // if ep stalled: send clear feature
     if (res == USB_TYPE_STALL_ERROR) {
         res = host->controlWrite(   dev,
@@ -77,7 +77,7 @@ void do_reset() {
   WRITE_RESTART(0x5FA0004);
 }
 
-bool USBHostE303PreSwitch::connect() {
+bool USBHostE303::connect() {
   printf("printf test\n");
   puts("puts test\n");
     if (dev_connected) {
@@ -99,11 +99,11 @@ bool USBHostE303PreSwitch::connect() {
               //  if (!int_in)
               //      break;
                 
-                USB_INFO("New E303PreSwitch device: VID:%04x PID:%04x [dev: %p - intf: %d]", dev->getVid(), dev->getPid(), dev, keyboard_intf);
-                dev->setName("E303PreSwitch", keyboard_intf);
-                host->registerDriver(dev, keyboard_intf, this, &USBHostE303PreSwitch::init);
-                bulk_in->attach(this, &USBHostE303PreSwitch::rxHandler);
-		//                int_in->attach(this, &USBHostE303PreSwitch::rxHandler);
+                USB_INFO("New E303 device: VID:%04x PID:%04x [dev: %p - intf: %d]", dev->getVid(), dev->getPid(), dev, keyboard_intf);
+                dev->setName("E303", keyboard_intf);
+                host->registerDriver(dev, keyboard_intf, this, &USBHostE303::init);
+                bulk_in->attach(this, &USBHostE303::rxHandler);
+		//                int_in->attach(this, &USBHostE303::rxHandler);
                 //host->interruptRead(dev, int_in, report, int_in->getSize(), false);
                 
                 dev_connected = true;
@@ -128,9 +128,9 @@ bool USBHostE303PreSwitch::connect() {
                 
 	      USB_INFO("New E303PostSwitch device: VID:%04x PID:%04x [dev: %p - intf: %d]", dev->getVid(), dev->getPid(), dev, keyboard_intf);
                 dev->setName("E303PostSwitch", keyboard_intf);
-                host->registerDriver(dev, keyboard_intf, this, &USBHostE303PreSwitch::init);
-		//  bulk_in->attach(this, &USBHostE303PreSwitch::rxHandler);
-		//                int_in->attach(this, &USBHostE303PreSwitch::rxHandler);
+                host->registerDriver(dev, keyboard_intf, this, &USBHostE303::init);
+		//  bulk_in->attach(this, &USBHostE303::rxHandler);
+		//                int_in->attach(this, &USBHostE303::rxHandler);
                 //host->interruptRead(dev, int_in, report, int_in->getSize(), false);
                 
                 dev_connected = true;
@@ -143,7 +143,7 @@ bool USBHostE303PreSwitch::connect() {
     return false;
 }
 
-void USBHostE303PreSwitch::rxHandler() {
+void USBHostE303::rxHandler() {
     int len = bulk_in->getLengthTransferred();
     printf("input length %d\n", len);
     int index = (len == 9) ? 1 : 0;
@@ -164,7 +164,7 @@ void USBHostE303PreSwitch::rxHandler() {
         host->bulkRead(dev, bulk_in, report, len_listen, false);
 }
 
-/*virtual*/ void USBHostE303PreSwitch::setVidPid(uint16_t vid, uint16_t pid)
+/*virtual*/ void USBHostE303::setVidPid(uint16_t vid, uint16_t pid)
 {
   printf("contemplating vid %04x pid %04x\n", vid, pid);
    // we don't check VID/PID for keyboard driver
@@ -181,7 +181,7 @@ void USBHostE303PreSwitch::rxHandler() {
   }
 }
 
-/*virtual*/ bool USBHostE303PreSwitch::parseInterface(uint8_t intf_nb, uint8_t intf_class, uint8_t intf_subclass, uint8_t intf_protocol) //Must return true if the interface should be parsed
+/*virtual*/ bool USBHostE303::parseInterface(uint8_t intf_nb, uint8_t intf_class, uint8_t intf_subclass, uint8_t intf_protocol) //Must return true if the interface should be parsed
 {
   printf("contemplating interface %02x class %02x sub %02x\n", intf_nb, intf_class, intf_subclass);
   if (preswitch_device_found && (intf_nb == 1)) keyboard_intf = intf_nb;
@@ -197,7 +197,7 @@ void USBHostE303PreSwitch::rxHandler() {
     return false;
 }
 
-/*virtual*/ bool USBHostE303PreSwitch::useEndpoint(uint8_t intf_nb, ENDPOINT_TYPE type, ENDPOINT_DIRECTION dir) //Must return true if the endpoint will be used
+/*virtual*/ bool USBHostE303::useEndpoint(uint8_t intf_nb, ENDPOINT_TYPE type, ENDPOINT_DIRECTION dir) //Must return true if the endpoint will be used
 {
 
   int use = (/*(type == 2) && */(intf_nb == keyboard_intf));

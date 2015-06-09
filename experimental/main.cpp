@@ -69,7 +69,7 @@ int main() {
     printf("but this goes nowhere\n");
 
     printf("Looking for pre-switch E303...\n");
-    USBHostE303PreSwitch pre;
+    USBHostE303 pre;
     int connected = 0;
     do {     
       connected = pre.connect();
