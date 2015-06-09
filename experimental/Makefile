@@ -9,7 +9,7 @@
 ifeq ($(BUILD_TARGET), TARGET_ARCH_MAX)
 TARGET_BOARD:=$(BUILD_TARGET)
 BUILD_DIR:=build/$(BUILD_TARGET)
- $(info Building for $(BUILD_TARGET) board = $(TARGET_BOARD) into ($BUILD_DIR))
+ $(info Building for $(BUILD_TARGET) board = $(TARGET_BOARD) into $(BUILD_DIR))
 TARGET_CHIP=TARGET_STM32F407VG
 TARGET_VENDOR=TARGET_STM
 TARGET_FAMILY=TARGET_STM32F4
@@ -21,7 +21,7 @@ LINKER_SCRIPT = ./mbed-src/targets/cmsis/$(TARGET_VENDOR)/$(TARGET_FAMILY)/$(TAR
 else ifeq ($(BUILD_TARGET), TARGET_NUCLEO_F401RE)
 TARGET_BOARD:=$(BUILD_TARGET)
 BUILD_DIR:=build/$(BUILD_TARGET)
-$(info Building for $(BUILD_TARGET) board = $(TARGET_BOARD) into ($BUILD_DIR))
+$(info Building for $(BUILD_TARGET) board = $(TARGET_BOARD) into $(BUILD_DIR))
 #CC_SYMBOLS = -DTARGET_NUCLEO_F401RE -DTARGET_M4 -DTARGET_CORTEX_M -DTARGET_STM -DTARGET_STM32F4 -DTARGET_STM32F401RE -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -D__CORTEX_M4 -DARM_MATH_CM4 -D__FPU_PRESENT=1 -DMBED_BUILD_TIMESTAMP=1433359735.85 -D__MBED__=1 -DTARGET_FF_ARDUINO -DTARGET_FF_MORPHO 
 #TARGET_CHIP=TARGET_STM32F401RE
 TARGET_BOARD:=$(BUILD_TARGET)
@@ -50,8 +50,7 @@ LINKER_CHIP=MKL25Z64
 STARTUP_NAME=startup_MKL25Z4.s #FIXME
 LINKER_SCRIPT = ./mbed-src/targets/cmsis/$(TARGET_VENDOR)/$(TARGET_FAMILY)/$(TARGET_CHIP)/TOOLCHAIN_GCC_ARM/$(LINKER_CHIP).ld
 OPENOCD_CFG=scripts/KL25Z64.cfg
-DEBUGGER=openocd-debug
-FLASH=openocd-flash
+INTERFACE=openocd
 
 else 
 $(error BUILD_TARGET=$(BUILD_TARGET) does not specify a known target)
@@ -184,7 +183,10 @@ BASE_STM32F4 = \
 ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_pcd_ex.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_fmpi2c_ex.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_adc.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_ll_sdmmc.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_dcmi_ex.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_usart.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_pwr.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_dac_ex.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_cec.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_spdifrx.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_ll_fmc.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_dcmi.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_tim.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_sram.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_cortex.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_pcd.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_can.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_flash.cpp ./mbed-src/targets/cmsis/TARGET_STM/TARGET_STM32F4/stm32f4xx_hal_nor.cpp 
 #moved to MBED_OVERRIDES ./mbed-src/targets/hal/TARGET_STM/TARGET_STM32F4/mbed_overrides.cpp \
 
-ifeq ($(TARGET_FAMILY), TARGET_STM32F4) 
+ifeq ($(TARGET_FAMILY), TARGET_STM32F4)
+ifndef INTERFACE
+INTERFACE=stlink
+endif 
 FAMILY_BASE := $(BASE_STM32F4)
 MBED_OVERRIDES=./mbed-src/targets/hal/$(TARGET_VENDOR)/$(TARGET_FAMILY)/mbed_overrides.cpp
 else ifeq ($(TARGET_FAMILY), TARGET_KLXX)
@@ -312,6 +314,14 @@ size:
 
 DEPS = $(OBJECTS:.o=.d) #$(SYS_OBJECTS:.o=.d)
 	-include $(DEPS)
+
+ifndef DEBUGGER
+DEBUGGER := $(INTERFACE)-debug
+endif
+ifndef FLASH
+FLASH := $(INTERFACE)-flash
+endif
+
 
 stlink-flash:  $(PROJECT).bin
 	(killall -s 9 -q st-util ; echo)
