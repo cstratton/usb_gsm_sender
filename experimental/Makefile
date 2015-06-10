@@ -189,9 +189,13 @@ INTERFACE=stlink
 endif 
 FAMILY_BASE := $(BASE_STM32F4)
 MBED_OVERRIDES=./mbed-src/targets/hal/$(TARGET_VENDOR)/$(TARGET_FAMILY)/mbed_overrides.cpp
+TARGET_CORTEXT_FLAGS := -DTARGET_M4 -D__CORTEX_M4 -DARM_MATH_CM4
+CPU = -mcpu=cortex-m4 -mthumb
 else ifeq ($(TARGET_FAMILY), TARGET_KLXX)
 FAMILY_BASE := $(BASE_COMMON)
 MBED_OVERRIDES=./mbed-src/targets/hal/$(TARGET_VENDOR)/$(TARGET_FAMILY)/$(TARGET_BOARD)/mbed_overrides.cpp
+TARGET_CORTEXT_FLAGS := -DTARGET_M0P -D__CORTEX_M0PLUS -DARM_MATH_CM0PLUS
+CPU = -mcpu=cortex-m0plus -mthumb
 else
 FAMILY_BASE := $(BASE_COMMON)
 endif
@@ -249,10 +253,10 @@ OBJCOPY = $(GCC_BIN)arm-none-eabi-objcopy
 OBJDUMP = $(GCC_BIN)arm-none-eabi-objdump
 SIZE 	= $(GCC_BIN)arm-none-eabi-size
 
-CPU = -mcpu=cortex-m4 -mthumb
 CC_FLAGS = $(CPU) -c -g -fno-common -fmessage-length=0 -Wall -fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer
 CC_FLAGS += -MMD -MP
-CC_SYMBOLS = -D$(TARGET_BOARD) -DTARGET_M4 -DTARGET_CORTEX_M -D$(TARGET_VENDOR) -D$(TARGET_FAMILY) -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC -D__CORTEX_M4 -DARM_MATH_CM4 -DMBED_BUILD_TIMESTAMP=1433039770.49 -D__MBED__=1 
+CC_SYMBOLS = -D$(TARGET_BOARD) $(TARGET_CORTEX_FLAGS) -DTARGET_CORTEX_M -D$(TARGET_VENDOR) -D$(TARGET_FAMILY) -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC 
+-DMBED_BUILD_TIMESTAMP=1433039770.49 -D__MBED__=1
 
 LD_FLAGS = $(CPU) -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,--wrap,main
 LD_FLAGS += -Wl,-Map=$(PROJECT).map,--cref
