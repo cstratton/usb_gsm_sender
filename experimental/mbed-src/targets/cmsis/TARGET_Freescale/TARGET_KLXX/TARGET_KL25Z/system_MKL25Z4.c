@@ -127,8 +127,8 @@ void SystemInit (void) {
   /* OSC0->CR: ERCLKEN=1,??=0,EREFSTEN=0,??=0,SC2P=1,SC4P=0,SC8P=0,SC16P=1 */
   OSC0->CR = (uint8_t)0x89U;
   /* MCG->C2: LOCRE0=0,??=0,RANGE0=2,HGO0=0,EREFS0=1,LP=0,IRCS=0 */
-  //MCG->C2 = (uint8_t)0x24U;
-  MCG->C2 = (uint8_t)0x2cU;
+  MCG->C2 = (uint8_t)0x24U;
+  //MCG->C2 = (uint8_t)0x2cU;
   /* MCG->C1: CLKS=2,FRDIV=3,IREFS=0,IRCLKEN=1,IREFSTEN=0 */
   MCG->C1 = (uint8_t)0x9AU;
   /* MCG->C4: DMX32=0,DRST_DRS=0 */
