@@ -360,6 +360,9 @@ openocd-term:
 
 gdb-server: $(GDB_SERVER)
 
+mflash: all
+	cp $(PROJECT).bin /media/cstratton/MBED
+
 debrick: $(DEBRICK)
 flash: $(PROJECT).bin $(FLASH)
 debug: $(PROJECT).bin $(DEBUGGER)

@@ -42,7 +42,7 @@ int USBHostE303::bulk_write(void *data, int len) {
 
 int USBHostE303::bulk_read(void *data, int len) {
   int rv = host->bulkRead(dev, bulk_in, (uint8_t *)data, len);
-  return (checkResult(rv, bulk_in)) ? -1 : 0;
+  return (checkResult(rv, bulk_in)) ? -1 : bulk_in->getLengthTransferred();
 }
 
 int USBHostE303::checkResult(uint8_t res, USBEndpoint * ep) {
@@ -82,7 +82,7 @@ bool USBHostE303::connect() {
     if (dev_connected) {
         return true;
     }
-    
+ retry:
     for (uint8_t i = 0; i < MAX_DEVICE_CONNECTED; i++) {
         if ((dev = host->getDevice(i)) != NULL) {
 
@@ -109,7 +109,10 @@ bool USBHostE303::connect() {
 		printf("going for post-switch\n");
 		printf("Not sure how to restart USB, so let's reboot!\n");
 		wait_ms(1000);
-		do_reset();
+		init();
+		//		do_reset();
+		dev_connected = false;
+		goto retry;
 		while (!connect())
 		  printf("trying again\n"); //now go for the post-switch
 		printf("post switch found, ready to move on to talking to it\n");
