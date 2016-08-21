@@ -1,0 +1,11 @@
+openocd -f /usr/local/share/openocd/scripts/board/frdm-kl25z.cfg -c init -c "halt" -c "reset halt"
+openocd -f /usr/local/share/openocd/scripts/board/frdm-kl25z.cfg -c init -c "halt" -c "reset halt" -c "flash write_image erase build/TARGET_CHRIS_KL25Z64/usbtest.bin 0" -c exit
+openocd -f /usr/local/share/openocd/scripts/board/frdm-kl25z.cfg -c init -c "halt" -c "reset halt" -c "flash write_image erase etchwas.bin 0" -c exit
+openocd -f /usr/local/share/openocd/scripts/board/frdm-kl25z.cfg -c init -c "reset halt"
+openocd -f /usr/local/share/openocd/scripts/board/frdm-kl25z.cfg -c init -exit
+
+
+Only thing that seems to actually toggle the hardware reset (with programmer NOT connected to it) is 
+kinetis mdm reset
+
+in latest openocd checkout August 2016

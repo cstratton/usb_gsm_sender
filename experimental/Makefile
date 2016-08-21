@@ -342,17 +342,17 @@ stlink-debug: all
 
 openocd-flash: $(PROJECT).bin
 	(killall -s 9 -q openocd ; echo)		
-	openocd -f $(OPENOCD_CFG) -c "shutdown" -c "flash write_image erase $(PROJECT).bin 0"	
+	openocd -f $(OPENOCD_CFG) -c init -c halt -c "flash write_image erase $(PROJECT).bin 0" -c exit	
 
 openocd-debug: all 
 	(killall -s 9 -q openocd ; echo)	
-	mate-terminal --geometry 48x10-0+0 --hide-menubar -t openocd -e "bash -c \"openocd -f $(OPENOCD_CFG); echo **openocd has exited ; sleep 2 \""  & 
+	mate-terminal --geometry 48x10-0+0 --hide-menubar -t openocd -e "bash -c \"openocd -f $(OPENOCD_CFG) -c init -c halt -c \\\"reset_halt\\\"; echo **openocd has exited ; sleep 50 \""  & 
 	echo "gdb attempting to connect...."
-	arm-none-eabi-gdb -ex "target extended-remote :3333" $(PROJECT).elf
+	arm-none-eabi-gdb -ex "target remote :3333" $(PROJECT).elf
 
 openocd-term: 
 	(killall -s 9 -q openocd ; echo)	
-	mate-terminal --geometry 48x10-0+0 --hide-menubar -t openocd -e "bash -c \"openocd -f $(OPENOCD_CFG); echo **openocd has exited ; sleep 2 \""  & 
+	mate-terminal --geometry 48x10-0+0 --hide-menubar -t openocd -e "bash -c \"openocd -f $(OPENOCD_CFG); echo **openocd has exited ; sleep 5 \""  & 
 	sleep 2
 	echo "telnet attempting to connect...."
 	telnet localhost 4444
